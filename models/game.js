@@ -11,13 +11,13 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       Game.belongsTo(models.Category, { foreignKey: 'categoryId' })
-      Game.hasMany(models.Items, { foreignKey: 'gameId' })
+      Game.hasMany(models.Item, { foreignKey: 'gameId' })
     }
   }
   Game.init({
     level: DataTypes.INTEGER,
     title: DataTypes.STRING,
-    category_id: DataTypes.INTEGER
+    categoryId: DataTypes.INTEGER
   }, {
     sequelize,
     modelName: 'Game',

@@ -18,8 +18,8 @@ module.exports = (sequelize, DataTypes) => {
     name: DataTypes.STRING,
     description: DataTypes.TEXT,
     law: DataTypes.TEXT,
-    category_id: DataTypes.INTEGER,
-    game_id: DataTypes.INTEGER,
+    categoryId: DataTypes.INTEGER,
+    gameId: DataTypes.INTEGER,
     ans: DataTypes.BOOLEAN
   }, {
     sequelize,
