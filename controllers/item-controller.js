@@ -6,7 +6,7 @@ const itemController = {
       const items = await Item.findAll()
       res.json({
         status: 'success',
-        data: items.toJSON()
+        data: items
       })
     } catch (err) {
       next(err)
