@@ -1,11 +1,26 @@
 const express = require('express')
 const router = express.Router()
-const itemController = require('../controllers/item-controller')
+const passport = require('../config/passport')
 
-router.get('/v1/api/games/:gameId', itemController.getGameItems)
-router.get('/v1/api/categories/:categoryId', itemController.getCategoryGames)
-router.get('/v1/api/categories', itemController.getCategories)
-router.get('/v1/api/items', itemController.getItems)
-router.get('/', (req, res) => res.send('Hello World'))
+const games = require('./modules/games')
+// const admin = require('./modules/admin')
+
+const { authenticated, authenticateAdmin } = require('../middlewares/api-auth')
+const { apiErrorHandler } = require('../middlewares/error-handler')
+
+// const userController = require('../controllers/user-controller')
+// const adminController = require('../controllers/admin-controller')
+
+// router.get('/current_user', authenticated, userController.getCurrentUser)
+// router.post(
+//   '/admin/login',
+//   passport.authenticate('local', { session: false }),
+//   authenticateAdmin,
+//   adminController.logIn
+// )
+// router.use('/admin', authenticated, authenticateAdmin, admin)
+router.use('/games', games)
+
+router.use('/', apiErrorHandler)
 
 module.exports = router

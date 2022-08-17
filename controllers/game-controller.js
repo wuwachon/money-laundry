@@ -23,7 +23,7 @@ const itemController = {
       next(err)
     }
   },
-  getCategoryGames: async (req, res, next) => {
+  getCategoryLevels: async (req, res, next) => {
     try {
       const category = await Category.findByPk(req.params.categoryId, {
         include: [Game]
@@ -36,9 +36,9 @@ const itemController = {
       next(err)
     }
   },
-  getGameItems: async (req, res, next) => {
+  getLevelItems: async (req, res, next) => {
     try {
-      const game = await Game.findByPk(req.params.gameId, {
+      const game = await Game.findByPk(req.params.levelId, {
         include: [Category, Item]
       })
       res.json({
