@@ -21,7 +21,8 @@ module.exports = {
     games.map(game => {
       items.push(...Array.from({ length: 3 }, () => ({
         ...ItemBads[Math.floor(Math.random() * ItemBads.length)],
-        ans: false,
+        is_legal: false,
+        is_published: true,
         category_id: category[0].id,
         game_id: game.id,
         created_at: new Date(),
@@ -29,7 +30,8 @@ module.exports = {
       })))
       items.push({
         ...ItemGoods[Math.floor(Math.random() * ItemGoods.length)],
-        ans: true,
+        is_legal: true,
+        is_published: true,
         category_id: category[0].id,
         game_id: game.id,
         created_at: new Date(),
