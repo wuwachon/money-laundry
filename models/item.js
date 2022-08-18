@@ -20,7 +20,8 @@ module.exports = (sequelize, DataTypes) => {
     law: DataTypes.TEXT,
     categoryId: DataTypes.INTEGER,
     gameId: DataTypes.INTEGER,
-    ans: DataTypes.BOOLEAN
+    isLegal: DataTypes.BOOLEAN,
+    isPublished: DataTypes.BOOLEAN
   }, {
     sequelize,
     modelName: 'Item',
