@@ -42,7 +42,25 @@ const adminController = {
   },
   getCategoryItems: async (req, res, next) => {
     try {
-
+      const items = await Item.findAll({
+        raw: true,
+        where: { categoryId: req.params.category_id},
+        attributes: [
+          'id', 'name', 'description', 'law', 'isLegal', 'isPublished', 'updatedAt',
+          [sequelize.col("Category.type"), 'category'],
+          [sequelize.col("Game.level"), 'level']  
+        ],
+        include: [
+          { model: Category, attributes: [] },
+          { model: Game, attributes: [] }
+        ],
+        order: [['gameId'], ['isPublished', 'DESC'], ['updatedAt', 'DESC']]
+      })
+      if (!items || items.length === 0) throw new Error('category not exist')
+      res.json({
+        status: 'success',
+        data: { items }
+      })
     } catch (err) {
       next(err)
     }
