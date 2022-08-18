@@ -3,8 +3,8 @@ const router = express.Router()
 
 const gameController = require('../../controllers/game-controller')
 
-router.get('/levels/:levelId', gameController.getLevelItems)
-router.get('/categories/:categoryId', gameController.getCategoryLevels)
+router.get('/levels/:levelId/items', gameController.getLevelItems)
+router.get('/categories/:categoryId/levels', gameController.getCategoryLevels)
 router.get('/categories', gameController.getCategories)
 router.get('/items', gameController.getItems)
 

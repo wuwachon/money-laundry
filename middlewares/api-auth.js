@@ -11,7 +11,7 @@ const authenticated = (req, res, next) => {
 }
 
 const authenticateAdmin = (req, res, next) => {
-  if (req.user.isAdmin === true) return next()
+  if (req.user.isAdmin) return next()
   return res.status(403).json({ status: 'error', message: 'permission denied' })
 }
 
