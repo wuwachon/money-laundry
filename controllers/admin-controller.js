@@ -123,11 +123,13 @@ const adminController = {
         },
         attributes: [
           'id',
-          [sequelize.col('Category.type'), 'category'],
-          [sequelize.fn('MAX', sequelize.col('level')), 'level']
+          'level',
+          [sequelize.col('Category.type'), 'category']
         ],
         include: { model: Category, attributes: [] },
-        group: ['Level.id'],
+        order: [
+          ['level', 'DESC']
+        ]
       })
       // if not find, throw an error
       if (!newestLevel) throw new Error('category not exist')
