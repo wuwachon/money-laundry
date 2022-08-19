@@ -14,7 +14,7 @@ module.exports = {
       { type: queryInterface.sequelize.QueryTypes.SELECT }
     )
     const games = await queryInterface.sequelize.query(
-      'SELECT id FROM Games;',
+      `SELECT id FROM Games WHERE category_id = ${category[0].id};`,
       { type: queryInterface.sequelize.QueryTypes.SELECT }
     )
     const items = []
