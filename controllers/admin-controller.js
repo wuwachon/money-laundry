@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken')
 const assert = require('assert')
 const sequelize = require('sequelize')
-const { Category, Game, Item } = require('../models')
+const { Category, Level, Item } = require('../models')
 const { Op } = require('sequelize')
 
 const adminController = {
@@ -31,11 +31,11 @@ const adminController = {
           'isPublished',
           'updatedAt',
           [sequelize.col('Category.type'), 'category'],
-          [sequelize.col('Game.level'), 'level'],
+          [sequelize.col('Level.level'), 'level'],
         ],
         include: [
           { model: Category, attributes: [] },
-          { model: Game, attributes: [] },
+          { model: Level, attributes: [] },
         ],
         order: [['updatedAt', 'DESC']],
         limit,
@@ -62,13 +62,13 @@ const adminController = {
           'isPublished',
           'updatedAt',
           [sequelize.col('Category.type'), 'category'],
-          [sequelize.col('Game.level'), 'level'],
+          [sequelize.col('Level.level'), 'level'],
         ],
         include: [
           { model: Category, attributes: [] },
-          { model: Game, attributes: [] },
+          { model: Level, attributes: [] },
         ],
-        order: [['gameId'], ['isPublished', 'DESC'], ['updatedAt', 'DESC']],
+        order: [['levelId'], ['isPublished', 'DESC'], ['updatedAt', 'DESC']],
       })
       if (!items || items.length === 0) throw new Error('category not exist')
       res.json({
@@ -83,7 +83,7 @@ const adminController = {
     try {
       const items = await Item.findAll({
         raw: true,
-        where: { gameId: req.params.level_id },
+        where: { levelId: req.params.level_id },
         attributes: [
           'id',
           'name',
@@ -93,11 +93,11 @@ const adminController = {
           'isPublished',
           'updatedAt',
           [sequelize.col('Category.type'), 'category'],
-          [sequelize.col('Game.level'), 'level'],
+          [sequelize.col('Level.level'), 'level'],
         ],
         include: [
           { model: Category, attributes: [] },
-          { model: Game, attributes: [] },
+          { model: Level, attributes: [] },
         ],
         order: [
           ['isPublished', 'DESC'],
@@ -116,7 +116,7 @@ const adminController = {
   getSuggestLevels: async (req, res, next) => {
     try {
       // find the latest level of specific category
-      const newestLevel = await Game.findOne({
+      const newestLevel = await Level.findOne({
         raw: true,
         where: {
           categoryId: req.params.category_id
@@ -127,12 +127,12 @@ const adminController = {
           [sequelize.fn('MAX', sequelize.col('level')), 'level']
         ],
         include: { model: Category, attributes: [] },
-        group: ['Game.id'],
+        group: ['Level.id'],
       })
       // if not find, throw an error
       if (!newestLevel) throw new Error('category not exist')
-      // find all the levels with count of publiched items
-      const levels = await Game.findAll({
+      // find all the levels with count of published items
+      const levels = await Level.findAll({
         raw: true,
         where: {
           categoryId: req.params.category_id,
@@ -147,14 +147,14 @@ const adminController = {
           { model: Category, attributes: [] },
           { model: Item, attributes: [], where: { isPublished: true } },
         ],
-        group: ['Game.id'],
+        group: ['Level.id'],
       })
       // the suggestLevels are the levels which have countItems attribute and less than 4 published items
       const suggestLevels = levels.filter((level) => level.countItems && level.countItems < 4)
       // if no any vacancy in exist levels, create a new level for suggestion
       if (!suggestLevels || suggestLevels.length === 0) {
         if (levels.some(level => level.id === newestLevel.id)) {
-          const newLevel = await Game.create({
+          const newLevel = await Level.create({
             categoryId: req.params.category_id,
             level: newestLevel.level + 1,
           })
@@ -193,7 +193,7 @@ const adminController = {
           'isLegal',
           'isPublushed',
           [sequelize.col('Category.type'), 'category'],
-          [sequelize.col('Game.level'), 'level'],
+          [sequelize.col('Level.level'), 'level'],
         ],
 
         raw: true,
@@ -211,14 +211,14 @@ const adminController = {
   // POST /v1/api/admin/item
   postItem: async (req, res, next) => {
     try {
-      const { categoryId, gameId, name, isLegal, description, law, isPublished } = req.body
-      assert(categoryId && gameId, 'categoryId and gameId are reauired.')
+      const { categoryId, levelId, name, isLegal, description, law, isPublished } = req.body
+      assert(categoryId && levelId, 'categoryId and levelId are required.')
 
       if (isPublished) {
         const { isPublishedItemCounts } = await Item.findAndCountAll({
           where: {
             categoryId: categoryId,
-            gameId: gameId,
+            levelId: levelId,
             isPublished: { [Op.eq]: [1] },
           },
         })
@@ -231,7 +231,7 @@ const adminController = {
 
       await Item.create({
         categoryId,
-        gameId,
+        levelId,
         name,
         isLegal,
         description,
@@ -254,14 +254,14 @@ const adminController = {
       const targetItem = await Item.findByPk(itemId)
       assert(targetItem, 'Target item not exist.')
 
-      const { categoryId, gameId, name, isLegal, description, law, isPublished } = req.body
-      assert(categoryId || gameId, 'categoryId and gameId are reauired.')
+      const { categoryId, levelId, name, isLegal, description, law, isPublished } = req.body
+      assert(categoryId || levelId, 'categoryId and levelId are required.')
 
       if (isPublished) {
         const { isPublishedItemCounts } = await Item.findAndCountAll({
           where: {
             categoryId: categoryId,
-            gameId: gameId,
+            levelId: levelId,
             isPublished: { [Op.eq]: [1] },
           },
         })
@@ -274,7 +274,7 @@ const adminController = {
 
       await targetItem.update({
         categoryId,
-        gameId,
+        levelId,
         name,
         isLegal,
         description,
@@ -301,7 +301,7 @@ const adminController = {
       assert(targetItem, 'Target item not exist.')
 
       const levelItems = await Item.findAll({
-        where: { gameId: targetItem.gameId },
+        where: { levelId: targetItem.levelId },
         attributes: ['isLegal'],
         raw: true,
       })
