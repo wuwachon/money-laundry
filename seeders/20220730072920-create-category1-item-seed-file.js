@@ -13,18 +13,26 @@ module.exports = {
       'SELECT id FROM Categories WHERE type = "求職";',
       { type: queryInterface.sequelize.QueryTypes.SELECT }
     )
-    const games = await queryInterface.sequelize.query(
-      `SELECT id FROM Games WHERE category_id = ${category[0].id};`,
+    const levels = await queryInterface.sequelize.query(
+      `SELECT id FROM Levels WHERE category_id = ${category[0].id};`,
       { type: queryInterface.sequelize.QueryTypes.SELECT }
     )
+    function shuffle(arr) {
+      const n = arr.length;
+      for (let i = n - 1; i > 0; i -= 1) {
+        const rand = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[rand]] = [arr[rand], arr[i]];
+      }
+      return arr
+    }
     const items = []
-    games.map(game => {
+    levels.map(level => {
       items.push(...Array.from({ length: 3 }, () => ({
         ...ItemBads[Math.floor(Math.random() * ItemBads.length)],
         is_legal: false,
         is_published: true,
         category_id: category[0].id,
-        game_id: game.id,
+        level_id: level.id,
         created_at: new Date(),
         updated_at: new Date()
       })))
@@ -33,12 +41,13 @@ module.exports = {
         is_legal: true,
         is_published: true,
         category_id: category[0].id,
-        game_id: game.id,
+        level_id: level.id,
         created_at: new Date(),
         updated_at: new Date()
       })
     })
-    await queryInterface.bulkInsert('Items', items, {})
+    const itemSeed = shuffle(items)
+    await queryInterface.bulkInsert('Items', itemSeed, {})
   },
 
   async down (queryInterface, Sequelize) {

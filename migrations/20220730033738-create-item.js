@@ -20,14 +20,15 @@ module.exports = {
       category_id: {
         type: Sequelize.INTEGER
       },
-      game_id: {
+      level_id: {
         type: Sequelize.INTEGER
       },
       is_legal: {
         type: Sequelize.BOOLEAN
       },
       is_published: {
-        type: Sequelize.BOOLEAN
+        type: Sequelize.BOOLEAN,
+        defaultValue: false
       },
       created_at: {
         allowNull: false,
