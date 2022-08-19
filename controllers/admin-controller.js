@@ -118,9 +118,16 @@ const adminController = {
       // find the latest level of specific category
       const newestLevel = await Game.findOne({
         raw: true,
-        where: { categoryId: req.params.category_id },
-        attributes: { exclude: ['createdAt', 'updatedAt'] },
-        order: [['createdAt', 'DESC']],
+        where: {
+          categoryId: req.params.category_id
+        },
+        attributes: [
+          'id',
+          [sequelize.col('Category.type'), 'category'],
+          [sequelize.fn('MAX', sequelize.col('level')), 'level']
+        ],
+        include: { model: Category, attributes: [] },
+        group: ['Game.id'],
       })
       // if not find, throw an error
       if (!newestLevel) throw new Error('category not exist')
@@ -146,13 +153,19 @@ const adminController = {
       const suggestLevels = levels.filter((level) => level.countItems && level.countItems < 4)
       // if no any vacancy in exist levels, create a new level for suggestion
       if (!suggestLevels || suggestLevels.length === 0) {
-        const newLevel = await Game.create({
-          ...newestLevel,
-          level: newestLevel.level + 1,
-        })
+        if (levels.some(level => level.id === newestLevel.id)) {
+          const newLevel = await Game.create({
+            categoryId: req.params.category_id,
+            level: newestLevel.level + 1,
+          })
+          return res.json({
+            status: 'success',
+            data: { suggestLevels: [newLevel] },
+          })
+        }
         return res.json({
           status: 'success',
-          data: { suggestLevels: newLevel },
+          data: { suggestLevels: [newestLevel] },
         })
       }
       res.json({
