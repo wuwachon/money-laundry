@@ -172,7 +172,17 @@ const adminController = {
 
       const targetItem = await Item.findOne({
         itemId,
-        attributes: { exclude: ['createdAt', 'updatedAt'] },
+        attributes: [
+          'id',
+          'name',
+          'description',
+          'law',
+          'isLegal',
+          'isPublushed',
+          [sequelize.col('Category.type'), 'category'],
+          [sequelize.col('Game.level'), 'level'],
+        ],
+
         raw: true,
       })
 
@@ -189,7 +199,7 @@ const adminController = {
   postItem: async (req, res, next) => {
     try {
       const { categoryId, gameId, name, isLegal, description, law, isPublished } = req.body
-      assert(categoryId || gameId, 'categoryId and gameId are reauired.')
+      assert(categoryId && gameId, 'categoryId and gameId are reauired.')
 
       if (isPublished) {
         const { isPublishedItemCounts } = await Item.findAndCountAll({
@@ -201,30 +211,22 @@ const adminController = {
         })
         assert(isPublishedItemCounts === 4, 'There are already 4 isPublished item.')
 
-        await Item.create({
-          categoryId,
-          gameId,
-          name,
-          isLegal,
-          description,
-          law,
-          isPublished,
-        })
-
-        res.status(201).json({ status: 'success' })
-      } else {
-        await Item.create({
-          categoryId,
-          gameId,
-          name,
-          isLegal,
-          description,
-          law,
-          isPublished,
-        })
-
-        res.status(201).json({ status: 'success' })
+        if (!isLegal) {
+          assert(description && law, 'description and law field are required for publishing.')
+        }
       }
+
+      await Item.create({
+        categoryId,
+        gameId,
+        name,
+        isLegal,
+        description,
+        law,
+        isPublished,
+      })
+
+      res.status(201).json({ status: 'success' })
     } catch (error) {
       next(error)
     }
@@ -251,33 +253,23 @@ const adminController = {
           },
         })
         assert(isPublishedItemCounts === 4, 'There are already 4 isPublished item.')
-
-        assert(name || isLegal || description || law, 'All field are required for publishing.')
-
-        await Item.update({
-          categoryId,
-          gameId,
-          name,
-          isLegal,
-          description,
-          law,
-          isPublished,
-        })
-
-        res.status(200).json({ status: 'success' })
-      } else {
-        await Item.update({
-          categoryId,
-          gameId,
-          name,
-          isLegal,
-          description,
-          law,
-          isPublished,
-        })
-
-        res.status(200).json({ status: 'success' })
       }
+
+      if (!isLegal) {
+        assert(description || law, 'All field are required for publishing.')
+      }
+
+      await Item.update({
+        categoryId,
+        gameId,
+        name,
+        isLegal,
+        description,
+        law,
+        isPublished,
+      })
+
+      res.status(200).json({ status: 'success' })
     } catch (error) {
       next(error)
     }
@@ -289,8 +281,19 @@ const adminController = {
       const itemId = Number(req.params.item_id)
       assert(itemId || itemId === 0, 'Params item id is required.')
 
-      const targetItem = await Item.findByPk(itemId)
+      const targetItem = await Item.findByPk({
+        itemId,
+        raw: true,
+      })
       assert(targetItem, 'Target item not exist.')
+
+      const levelItems = await Item.findAll({
+        where: { categoryId: targetItem.categoryId },
+        attributes: ['isLegal'],
+        raw: true,
+      })
+      const isLegalLevelItems = levelItems.filter((item) => item.isLegal === 1)
+      assert(isLegalLevelItems.length >= 1, 'The last isLegal item can not be deleted.')
 
       await targetItem.destroy()
 
