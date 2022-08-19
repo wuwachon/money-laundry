@@ -253,10 +253,10 @@ const adminController = {
           },
         })
         assert(isPublishedItemCounts === 4, 'There are already 4 isPublished item.')
-      }
 
-      if (!isLegal) {
-        assert(description || law, 'All field are required for publishing.')
+        if (!isLegal) {
+          assert(description || law, 'All field are required for publishing.')
+        }
       }
 
       await Item.update({
@@ -288,7 +288,7 @@ const adminController = {
       assert(targetItem, 'Target item not exist.')
 
       const levelItems = await Item.findAll({
-        where: { categoryId: targetItem.categoryId },
+        where: { gameId: targetItem.gameId },
         attributes: ['isLegal'],
         raw: true,
       })
