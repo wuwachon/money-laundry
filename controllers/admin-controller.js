@@ -255,11 +255,11 @@ const adminController = {
         assert(isPublishedItemCounts === 4, 'There are already 4 isPublished item.')
 
         if (!isLegal) {
-          assert(description || law, 'All field are required for publishing.')
+          assert(description && law, 'description and law field are required for publishing.')
         }
       }
 
-      await Item.update({
+      await targetItem.update({
         categoryId,
         gameId,
         name,
