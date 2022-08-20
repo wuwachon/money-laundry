@@ -191,6 +191,10 @@ const adminController = {
           [sequelize.col('Category.type'), 'category'],
           [sequelize.col('Level.level'), 'level'],
         ],
+        include: [
+          { model: Category, attributes: [] },
+          { model: Level, attributes: [] },
+        ],
 
         raw: true,
       })
