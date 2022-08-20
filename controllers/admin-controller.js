@@ -294,23 +294,22 @@ const adminController = {
       const itemId = Number(req.params.item_id)
       assert(itemId || itemId === 0, 'Params item id is required.')
 
-      const targetItem = await Item.findByPk({
-        itemId,
-        raw: true,
-      })
+      const targetItem = await Item.findByPk(itemId)
       assert(targetItem, 'Target item not exist.')
 
       const levelItems = await Item.findAll({
         where: { levelId: targetItem.levelId },
-        attributes: ['isLegal'],
+        attributes: ['isLegal', 'isPublished'],
         raw: true,
       })
-      const isLegalLevelItems = levelItems.filter((item) => item.isLegal === 1)
-      assert(isLegalLevelItems.length >= 1, 'The last isLegal item can not be deleted.')
 
+      if (targetItem.isLegal && targetItem.isPublished ) {
+        const isLegalLevelItems = levelItems.filter((item) => item.isLegal === 1 && item.isPublished === 1)
+        assert(isLegalLevelItems.length > 1, 'The last isLegal item can not be deleted.')
+      }
+      
       await targetItem.destroy()
-
-      res.status(204).json({ status: 'success' })
+      res.status(200).json({ status: 'success' })
     } catch (error) {
       next(error)
     }
