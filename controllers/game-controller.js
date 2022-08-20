@@ -1,3 +1,4 @@
+const sequelize = require('sequelize')
 const { Category, Level, Item } = require('../models')
 
 const itemController = {
@@ -25,12 +26,28 @@ const itemController = {
   },
   getCategoryLevels: async (req, res, next) => {
     try {
-      const category = await Category.findByPk(req.params.categoryId, {
-        include: [Level]
+      const levels = await Level.findAll({
+        raw: true,
+        where: {
+          categoryId: req.params.categoryId
+        },
+        attributes: [
+          'id',
+          'level',
+          'title',
+          'categoryId',
+          [sequelize.fn('COUNT', sequelize.col('Items.id')), 'countItems']
+        ],
+        include: [
+          { model: Item, attributes: [], where: { isPublished: true } }
+        ],
+        group: ['Level.id'],
+        order: ['level']
       })
+
       res.json({
         status: 'success',
-        data: category.toJSON()
+        data: { Levels: levels }
       })
     } catch (err) {
       next(err)
