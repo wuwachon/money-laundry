@@ -39,7 +39,10 @@ const itemController = {
   getLevelItems: async (req, res, next) => {
     try {
       const level = await Level.findByPk(req.params.levelId, {
-        include: [Category, Item]
+        include: [
+          Category,
+          { model: Item, where: { isPublished: true } }
+        ]
       })
       res.json({
         status: 'success',
