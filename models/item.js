@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       Item.belongsTo(models.Category, { foreignKey: 'categoryId' })
-      Item.belongsTo(models.Game, { foreignKey: 'gameId' })
+      Item.belongsTo(models.Level, { foreignKey: 'levelId' })
     }
   }
   Item.init({
@@ -19,7 +19,7 @@ module.exports = (sequelize, DataTypes) => {
     description: DataTypes.TEXT,
     law: DataTypes.TEXT,
     categoryId: DataTypes.INTEGER,
-    gameId: DataTypes.INTEGER,
+    levelId: DataTypes.INTEGER,
     isLegal: DataTypes.BOOLEAN,
     isPublished: DataTypes.BOOLEAN
   }, {

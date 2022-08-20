@@ -1,4 +1,4 @@
-const { Category, Game, Item } = require('../models')
+const { Category, Level, Item } = require('../models')
 
 const itemController = {
   getItems: async (req, res, next) => {
@@ -26,7 +26,7 @@ const itemController = {
   getCategoryLevels: async (req, res, next) => {
     try {
       const category = await Category.findByPk(req.params.categoryId, {
-        include: [Game]
+        include: [Level]
       })
       res.json({
         status: 'success',
@@ -38,12 +38,12 @@ const itemController = {
   },
   getLevelItems: async (req, res, next) => {
     try {
-      const game = await Game.findByPk(req.params.levelId, {
+      const level = await Level.findByPk(req.params.levelId, {
         include: [Category, Item]
       })
       res.json({
         status: 'success',
-        data: game.toJSON()
+        data: level.toJSON()
       })
     } catch (err) {
       next(err)
