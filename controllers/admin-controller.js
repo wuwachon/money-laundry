@@ -119,17 +119,11 @@ const adminController = {
       const newestLevel = await Level.findOne({
         raw: true,
         where: {
-          categoryId: req.params.category_id
+          categoryId: req.params.category_id,
         },
-        attributes: [
-          'id',
-          'level',
-          [sequelize.col('Category.type'), 'category']
-        ],
+        attributes: ['id', 'level', [sequelize.col('Category.type'), 'category']],
         include: { model: Category, attributes: [] },
-        order: [
-          ['level', 'DESC']
-        ]
+        order: [['level', 'DESC']],
       })
       // if not find, throw an error
       if (!newestLevel) throw new Error('category not exist')
@@ -155,7 +149,7 @@ const adminController = {
       const suggestLevels = levels.filter((level) => level.countItems && level.countItems < 4)
       // if no any vacancy in exist levels, create a new level for suggestion
       if (!suggestLevels || suggestLevels.length === 0) {
-        if (levels.some(level => level.id === newestLevel.id)) {
+        if (levels.some((level) => level.id === newestLevel.id)) {
           const newLevel = await Level.create({
             categoryId: req.params.category_id,
             level: newestLevel.level + 1,
@@ -193,7 +187,7 @@ const adminController = {
           'description',
           'law',
           'isLegal',
-          'isPublushed',
+          'isPublished',
           [sequelize.col('Category.type'), 'category'],
           [sequelize.col('Level.level'), 'level'],
         ],
