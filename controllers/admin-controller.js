@@ -214,15 +214,15 @@ const adminController = {
       const { categoryId, levelId, name, isLegal, description, law, isPublished } = req.body
       assert(categoryId && levelId, 'categoryId and levelId are required.')
 
-      if (isPublished === 'true') {
-        const { isPublishedItemCounts } = await Item.findAndCountAll({
+      if (isPublished) {
+        const { count } = await Item.findAndCountAll({
           where: {
             categoryId: categoryId,
             levelId: levelId,
             isPublished: { [Op.eq]: [1] },
           },
         })
-        assert(isPublishedItemCounts === 4, 'There are already 4 isPublished item.')
+        assert(count < 4, 'There are already 4 isPublished item.')
 
         if (!isLegal) {
           assert(description && law, 'description and law field are required for publishing.')
@@ -257,16 +257,19 @@ const adminController = {
       const { categoryId, levelId, name, isLegal, description, law, isPublished } = req.body
       assert(categoryId || levelId, 'categoryId and levelId are required.')
 
-      if (isPublished === 'true') {
-        const { isPublishedItemCounts } = await Item.findAndCountAll({
+      if (isPublished) {
+        const { count } = await Item.findAndCountAll({
           where: {
             categoryId: categoryId,
             levelId: levelId,
             isPublished: { [Op.eq]: [1] },
           },
         })
-        assert(isPublishedItemCounts === 4, 'There are already 4 isPublished item.')
-
+        // 如果不是原來的類別和關卡，要檢查該關卡選項數量
+        if (targetItem.levelId !== levelId && targetItem.categoryId !== categoryId) {
+          assert(count < 4, 'There are already 4 isPublished item.')
+        }
+        
         if (!isLegal) {
           assert(description && law, 'description and law field are required for publishing.')
         }
