@@ -266,7 +266,7 @@ const adminController = {
           },
         })
         // 如果不是原來的類別和關卡，要檢查該關卡選項數量
-        if (targetItem.levelId !== levelId && targetItem.categoryId !== categoryId) {
+        if (targetItem.levelId !== levelId || targetItem.categoryId !== categoryId) {
           assert(count < 4, 'There are already 4 isPublished item.')
         }
         
