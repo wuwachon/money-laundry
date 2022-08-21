@@ -179,8 +179,7 @@ const adminController = {
       const itemId = Number(req.params.item_id)
       assert(itemId || itemId === 0, 'Params item id is required.')
 
-      const targetItem = await Item.findOne({
-        itemId,
+      const targetItem = await Item.findByPk(itemId, {
         attributes: [
           'id',
           'name',
