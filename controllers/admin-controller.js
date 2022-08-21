@@ -188,6 +188,8 @@ const adminController = {
           'law',
           'isLegal',
           'isPublished',
+          'categoryId',
+          'levelId',
           [sequelize.col('Category.type'), 'category'],
           [sequelize.col('Level.level'), 'level'],
         ],
