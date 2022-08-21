@@ -214,7 +214,7 @@ const adminController = {
       const { categoryId, levelId, name, isLegal, description, law, isPublished } = req.body
       assert(categoryId && levelId, 'categoryId and levelId are required.')
 
-      if (isPublished) {
+      if (isPublished === 'true') {
         const { isPublishedItemCounts } = await Item.findAndCountAll({
           where: {
             categoryId: categoryId,
@@ -257,7 +257,7 @@ const adminController = {
       const { categoryId, levelId, name, isLegal, description, law, isPublished } = req.body
       assert(categoryId || levelId, 'categoryId and levelId are required.')
 
-      if (isPublished) {
+      if (isPublished === 'true') {
         const { isPublishedItemCounts } = await Item.findAndCountAll({
           where: {
             categoryId: categoryId,
@@ -303,11 +303,11 @@ const adminController = {
         raw: true,
       })
 
-      if (targetItem.isLegal && targetItem.isPublished ) {
+      if (targetItem.isLegal && targetItem.isPublished) {
         const isLegalLevelItems = levelItems.filter((item) => item.isLegal === 1 && item.isPublished === 1)
         assert(isLegalLevelItems.length > 1, 'The last isLegal item can not be deleted.')
       }
-      
+
       await targetItem.destroy()
       res.status(200).json({ status: 'success' })
     } catch (error) {
