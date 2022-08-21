@@ -212,34 +212,34 @@ const adminController = {
   postItem: async (req, res, next) => {
     try {
       const { categoryId, levelId, name, isLegal, description, law, isPublished } = req.body
-      assert(categoryId && levelId, 'categoryId and levelId are required.')
+      // assert(categoryId && levelId, 'categoryId and levelId are required.')
 
-      if (isPublished) {
-        const { isPublishedItemCounts } = await Item.findAndCountAll({
-          where: {
-            categoryId: categoryId,
-            levelId: levelId,
-            isPublished: { [Op.eq]: [1] },
-          },
-        })
-        assert(isPublishedItemCounts === 4, 'There are already 4 isPublished item.')
+      // if (isPublished) {
+      //   const { isPublishedItemCounts } = await Item.findAndCountAll({
+      //     where: {
+      //       categoryId: categoryId,
+      //       levelId: levelId,
+      //       isPublished: { [Op.eq]: [1] },
+      //     },
+      //   })
+      //   assert(isPublishedItemCounts === 4, 'There are already 4 isPublished item.')
 
-        if (!isLegal) {
-          assert(description && law, 'description and law field are required for publishing.')
-        }
-      }
+      //   if (!isLegal) {
+      //     assert(description && law, 'description and law field are required for publishing.')
+      //   }
+      // }
 
-      await Item.create({
-        categoryId,
-        levelId,
-        name,
-        isLegal,
-        description,
-        law,
-        isPublished,
-      })
+      // await Item.create({
+      //   categoryId,
+      //   levelId,
+      //   name,
+      //   isLegal,
+      //   description,
+      //   law,
+      //   isPublished,
+      // })
 
-      res.status(201).json({ status: 'success' })
+      res.status(201).json({ status: 'success' , res: req.body })
     } catch (error) {
       next(error)
     }
